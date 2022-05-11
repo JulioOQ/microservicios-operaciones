@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonPropertyOrder({ "idTransaccion", "tipoTransaccion", "origen", "destino", "monto", "moneda", "comision","descripcion","fecha"})
 public class Transaction {
 
 	@JsonProperty("id_transaccion")
@@ -24,6 +26,7 @@ public class Transaction {
 	private String idTransaccion;
 	private String origen;
 	private String destino;
+	@JsonProperty("tipo_transaccion")
 	private String tipoTransaccion;
 	private String descripcion;
 	private String moneda;
