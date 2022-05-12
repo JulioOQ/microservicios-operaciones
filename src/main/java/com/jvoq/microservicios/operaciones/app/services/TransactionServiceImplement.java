@@ -3,8 +3,10 @@ package com.jvoq.microservicios.operaciones.app.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.jvoq.microservicios.operaciones.app.clients.ProductAccountClientFeign;
-import com.jvoq.microservicios.operaciones.app.models.documents.Account;
+import com.jvoq.microservicios.operaciones.app.clients.ProductClientFeign;
+import com.jvoq.microservicios.operaciones.app.clients.UserClientFeign;
+import com.jvoq.microservicios.operaciones.app.models.documents.Client;
+import com.jvoq.microservicios.operaciones.app.models.documents.Product;
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 import com.jvoq.microservicios.operaciones.app.models.repository.TransactionRepository;
 
@@ -16,9 +18,12 @@ public class TransactionServiceImplement implements TransactionService {
 
 	@Autowired
 	TransactionRepository transactionRepository;
-	
 
-	ProductAccountClientFeign productAccountClientFeign;
+	@Autowired
+	ProductClientFeign productClientFeign;
+
+	@Autowired
+	UserClientFeign userClientFeign;
 
 	@Override
 	public Flux<Transaction> findAll() {
@@ -41,12 +46,12 @@ public class TransactionServiceImplement implements TransactionService {
 	}
 
 	@Override
-	public Mono<Account> findByIdAccount(String id) {
-		return productAccountClientFeign.getByIdProductAccount(id);
+	public Mono<Product> findProductById(String id) {
+		return productClientFeign.findProductById(id);
 	}
 
 	@Override
-	public Mono<Account> updateAccount(Account account) {
-		return productAccountClientFeign.updateProductAccount(account);
+	public Mono<Client> findClientById(String id) {
+		return userClientFeign.findClientById(id);
 	}
 }

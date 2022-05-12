@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.jvoq.microservicios.operaciones.app.models.documents.Client;
+import com.jvoq.microservicios.operaciones.app.models.documents.Product;
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 import com.jvoq.microservicios.operaciones.app.services.AccountService;
 import com.jvoq.microservicios.operaciones.app.services.CreditService;
 import com.jvoq.microservicios.operaciones.app.services.TransactionService;
-
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -48,6 +50,20 @@ public class TransactionController {
 				.map(t -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(t))
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 
+	}
+
+	@GetMapping("/producto/{id}")
+	public Mono<ResponseEntity<Product>> getProductoById(@PathVariable String id) {
+		return transactionService.findProductById(id)
+				.map(t -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(t))
+				.defaultIfEmpty(ResponseEntity.notFound().build());
+	}
+	
+	@GetMapping("/cliente/{id}")
+	public Mono<ResponseEntity<Client>> getClienteById(@PathVariable String id) {
+		return transactionService.findClientById(id)
+				.map(t -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(t))
+				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 
 	@PostMapping
