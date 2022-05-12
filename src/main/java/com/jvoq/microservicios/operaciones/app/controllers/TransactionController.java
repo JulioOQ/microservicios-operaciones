@@ -2,7 +2,6 @@ package com.jvoq.microservicios.operaciones.app.controllers;
 
 import java.net.URI;
 import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,24 +14,24 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 import com.jvoq.microservicios.operaciones.app.services.AccountService;
 import com.jvoq.microservicios.operaciones.app.services.CreditService;
 import com.jvoq.microservicios.operaciones.app.services.TransactionService;
 
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-//@RequestMapping("/transactions")
+@RequestMapping("/transactions")
 public class TransactionController {
 
 	@Autowired
 	private TransactionService transactionService;
 
 	@Autowired
-	AccountService accountService;
+	private AccountService accountService;
 
 	@Autowired
 	private CreditService creditService;

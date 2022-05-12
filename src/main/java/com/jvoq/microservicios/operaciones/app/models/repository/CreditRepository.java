@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.jvoq.microservicios.operaciones.app.models.documents.Credit;
 
 
+
 @Repository
 public interface CreditRepository extends ReactiveMongoRepository<Credit, String> {
 

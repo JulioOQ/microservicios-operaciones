@@ -19,27 +19,27 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({ "idCuenta", "numeroCuenta", "saldo", "moneda", "idCliente", "idProducto", "fechaCreacion" })
+@JsonPropertyOrder({ "idCuenta", "numeroCuenta", "saldo", "moneda","idCliente","idProducto","fechaCreacion"})
 public class Account {
 
 	@Id
 	@JsonProperty("id_cuenta")
 	private String idCuenta;
-
+	
 	@Field("id_producto")
 	@JsonProperty("id_producto")
 	private String idProducto;
-
+	
 	@Field("id_cliente")
 	@JsonProperty("id_cliente")
 	private String idCliente;
-
+	
 	@Field("numero_cuenta")
 	@JsonProperty("numero_cuenta")
 	private String numeroCuenta;
 	private String moneda;
 	private Double saldo;
-
+	
 	@Field("fecha_creacion")
 	@JsonProperty("fecha_creacion")
 	private Date fechaCreacion;

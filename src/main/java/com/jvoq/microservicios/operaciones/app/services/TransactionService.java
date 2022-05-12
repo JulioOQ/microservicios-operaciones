@@ -2,6 +2,8 @@ package com.jvoq.microservicios.operaciones.app.services;
 
 
 
+
+import com.jvoq.microservicios.operaciones.app.models.documents.Account;
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 
 import reactor.core.publisher.Flux;
@@ -16,4 +18,8 @@ public interface TransactionService {
 	public Mono<Transaction> save(Transaction transaction);
 
 	public Mono<Void> delete(Transaction transaction);
+	
+	public Mono<Account> findByIdAccount(String id);
+	
+	public Mono<Account> updateAccount(Account account);
 }

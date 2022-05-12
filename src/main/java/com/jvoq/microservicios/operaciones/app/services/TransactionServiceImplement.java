@@ -3,6 +3,8 @@ package com.jvoq.microservicios.operaciones.app.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jvoq.microservicios.operaciones.app.clients.ProductAccountClientFeign;
+import com.jvoq.microservicios.operaciones.app.models.documents.Account;
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 import com.jvoq.microservicios.operaciones.app.models.repository.TransactionRepository;
 
@@ -14,6 +16,9 @@ public class TransactionServiceImplement implements TransactionService {
 
 	@Autowired
 	TransactionRepository transactionRepository;
+	
+
+	ProductAccountClientFeign productAccountClientFeign;
 
 	@Override
 	public Flux<Transaction> findAll() {
@@ -33,5 +38,15 @@ public class TransactionServiceImplement implements TransactionService {
 	@Override
 	public Mono<Void> delete(Transaction transaction) {
 		return transactionRepository.delete(transaction);
+	}
+
+	@Override
+	public Mono<Account> findByIdAccount(String id) {
+		return productAccountClientFeign.getByIdProductAccount(id);
+	}
+
+	@Override
+	public Mono<Account> updateAccount(Account account) {
+		return productAccountClientFeign.updateProductAccount(account);
 	}
 }
