@@ -3,6 +3,8 @@ package com.jvoq.microservicios.operaciones.app.controllers;
 import java.net.URI;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +23,21 @@ import com.jvoq.microservicios.operaciones.app.services.AccountService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@RefreshScope
 @RestController
 @RequestMapping("accounts")
 public class AccountController {
 
 	@Autowired
 	AccountService accountService;
+	
+	@Value("${offers.discount:default}")
+	private String discount;
+	
+	@GetMapping("view-discounts")
+	public String viewDiscounts() {
+		return "Discount operaciones is " + discount;
+	}
 
 	@GetMapping
 	public Mono<ResponseEntity<Flux<Account>>> getAll() {
