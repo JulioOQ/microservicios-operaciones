@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +26,21 @@ import com.jvoq.microservicios.operaciones.app.services.ProductService;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
+@RefreshScope
 @RestController
 @RequestMapping("/credits")
 public class CreditController {
 	@Autowired
 	private CreditService creditService;
+	
+	@Value("${offers.discount:default}")
+	private String discount;
+	
+	@GetMapping("view-discounts")
+	public String viewDiscounts() {
+		return "Discount operaciones is " + discount;
+	}
+
 
 	@Autowired
 	ClientService clientService;
