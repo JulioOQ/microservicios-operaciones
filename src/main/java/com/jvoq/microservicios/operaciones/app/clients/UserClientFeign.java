@@ -8,9 +8,9 @@ import com.jvoq.microservicios.operaciones.app.models.documents.Client;
 import reactivefeign.spring.config.ReactiveFeignClient;
 import reactor.core.publisher.Mono;
 
-@ReactiveFeignClient(name = "jvoq-microservicio-clientes", url = "localhost:8001")
+@ReactiveFeignClient(name = "jvoq-microservicio-clientes", url = "localhost:8090")
 public interface UserClientFeign {
 
-	@GetMapping("/{id}")
+	@GetMapping("/api/clients/{id}")
 	public Mono<Client> findById(@PathVariable String id);
 }

@@ -2,6 +2,7 @@ package com.jvoq.microservicios.operaciones.app.controllers;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,27 +21,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jvoq.microservicios.operaciones.app.models.documents.Credit;
+import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 import com.jvoq.microservicios.operaciones.app.services.ClientService;
 import com.jvoq.microservicios.operaciones.app.services.CreditService;
 import com.jvoq.microservicios.operaciones.app.services.ProductService;
+import com.jvoq.microservicios.operaciones.app.services.TransactionService;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 @RefreshScope
 @RestController
 @RequestMapping("/credits")
 public class CreditController {
 	@Autowired
 	private CreditService creditService;
-	
-	@Value("${offers.discount:default}")
-	private String discount;
-	
-	@GetMapping("view-discounts")
+
+	@Value("${mensaje.verificacion:default}")
+	private String mensaje;
+
+	@GetMapping("verificar")
 	public String viewDiscounts() {
-		return "Discount operaciones is " + discount;
+		return "Mensaje -> " + mensaje;
 	}
 
+	@Autowired
+	private TransactionService transactionService;
 
 	@Autowired
 	ClientService clientService;
@@ -113,4 +119,54 @@ public class CreditController {
 			return creditService.delete(c).then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
 		}).defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
 	}
+
+	@PostMapping("/withdraw")
+	public Mono<ResponseEntity<Transaction>> withdraw(@RequestBody Transaction transaction) {
+		return creditService.findById(transaction.getOrigen()).flatMap(a -> {
+			if (a.getSaldo() >= transaction.getMonto() && transaction.getMonto() > 0) {
+				a.setSaldo(a.getSaldo() - transaction.getMonto());
+				creditService.save(a).subscribe();
+
+				transaction.setFecha(new Date());
+				return transactionService.save(transaction);
+			} else {
+				return Mono.error(new RuntimeException("El saldo de la cuenta origen es insuficiente"));
+			}
+		}).map(t -> ResponseEntity.created(URI.create("/transactions".concat(t.getIdTransaccion())))
+				.contentType(MediaType.APPLICATION_JSON).body(t)).defaultIfEmpty(ResponseEntity.notFound().build());
+	}
+
+	@PostMapping("/pay")
+	public Mono<ResponseEntity<Transaction>> pay(@RequestBody Transaction transaction) {
+		return creditService.findById(transaction.getDestino()).flatMap(a -> {
+			if (transaction.getMonto() > 0 && (transaction.getMonto() + a.getSaldo()) <= a.getLineaCredito()) {
+				a.setSaldo(a.getSaldo() + transaction.getMonto());
+				creditService.save(a).subscribe();
+
+				transaction.setFecha(new Date());
+				return transactionService.save(transaction);
+			} else {
+				return Mono.error(new RuntimeException(
+						"El monto a pagar debe ser mayor a cero y menor o igual a la linea de credito"));
+			}
+		}).map(t -> ResponseEntity.created(URI.create("/transactions".concat(t.getIdTransaccion())))
+				.contentType(MediaType.APPLICATION_JSON).body(t)).defaultIfEmpty(ResponseEntity.notFound().build());
+	}
+
+	@PostMapping("/buy")
+	public Mono<ResponseEntity<Transaction>> buy(@RequestBody Transaction transaction) {
+		return creditService.findById(transaction.getOrigen()).flatMap(a -> {
+			if (transaction.getMonto() > 0 && transaction.getMonto() <= a.getSaldo()) {
+				a.setSaldo(a.getSaldo() - transaction.getMonto());
+				creditService.save(a).subscribe();
+
+				transaction.setFecha(new Date());
+				return transactionService.save(transaction);
+			} else {
+				return Mono.error(new RuntimeException("El saldo es insuficiente"));
+			}
+		}).map(t -> ResponseEntity.created(URI.create("/transactions".concat(t.getIdTransaccion())))
+				.contentType(MediaType.APPLICATION_JSON).body(t)).defaultIfEmpty(ResponseEntity.notFound().build());
+	}
+
 }
