@@ -12,5 +12,5 @@ import reactor.core.publisher.Mono;
 public interface UserClientFeign {
 
 	@GetMapping("/{id}")
-	public Mono<Client> findClientById(@PathVariable String id);
+	public Mono<Client> findById(@PathVariable String id);
 }

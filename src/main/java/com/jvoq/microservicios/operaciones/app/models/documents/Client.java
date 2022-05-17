@@ -27,4 +27,5 @@ public class Client {
 	private List<Client> representantes;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Lima")
 	private Date fecha_creacion;
+	private boolean juridico;
 }

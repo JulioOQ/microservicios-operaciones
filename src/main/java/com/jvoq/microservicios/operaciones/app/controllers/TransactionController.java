@@ -19,6 +19,7 @@ import com.jvoq.microservicios.operaciones.app.models.documents.Client;
 import com.jvoq.microservicios.operaciones.app.models.documents.Product;
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 import com.jvoq.microservicios.operaciones.app.services.AccountService;
+import com.jvoq.microservicios.operaciones.app.services.ClientService;
 import com.jvoq.microservicios.operaciones.app.services.CreditService;
 import com.jvoq.microservicios.operaciones.app.services.TransactionService;
 
@@ -37,6 +38,9 @@ public class TransactionController {
 
 	@Autowired
 	private CreditService creditService;
+
+	@Autowired
+	ClientService clientService;
 
 	@GetMapping
 	public Mono<ResponseEntity<Flux<Transaction>>> getAll() {
@@ -58,11 +62,10 @@ public class TransactionController {
 				.map(t -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(t))
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
-	
+
 	@GetMapping("/cliente/{id}")
 	public Mono<ResponseEntity<Client>> getClienteById(@PathVariable String id) {
-		return transactionService.findClientById(id)
-				.map(t -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(t))
+		return clientService.findById(id).map(t -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(t))
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 

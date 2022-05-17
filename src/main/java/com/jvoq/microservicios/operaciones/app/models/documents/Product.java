@@ -16,4 +16,6 @@ public class Product {
 	private String tipo_producto;
 	private String nombre;
 	private String descripcion;
+	private int juridico;
+	private int natural;
 }

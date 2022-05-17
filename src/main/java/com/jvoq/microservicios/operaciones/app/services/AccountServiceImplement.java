@@ -7,13 +7,11 @@ import com.jvoq.microservicios.operaciones.app.models.repository.AccountReposito
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
 @Service
 public class AccountServiceImplement implements AccountService {
 
 	@Autowired
 	AccountRepository accountRepository;
-	
 
 	@Override
 	public Flux<Account> findAll() {
@@ -28,7 +26,7 @@ public class AccountServiceImplement implements AccountService {
 	@Override
 	public Mono<Account> save(Account account) {
 		return accountRepository.save(account);
-				
+
 	}
 
 	@Override
@@ -42,19 +40,7 @@ public class AccountServiceImplement implements AccountService {
 	}
 
 	@Override
-	public Mono<Boolean> findProductByIdClientAndIdProduct(String idClient, String idProduct) {			
+	public Flux<Account> findAccountsByIdClientAndIdProduct(String idClient, String idProduct) {
 		return accountRepository.findAccountByIdClienteAndIdProducto(idClient, idProduct);
-			
-				
 	}
-
-	
-
-	
-	
-	
-
-	
-
-
 }

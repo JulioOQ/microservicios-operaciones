@@ -35,4 +35,8 @@ public class CreditServiceImplement implements CreditService {
 		return creditRepository.delete(credit);
 	}
 
+	@Override
+	public Flux<Credit> findCreditsByIdClientAndIdProduct(String idClient, String idProduct) {
+		return creditRepository.findCreditsByIdClienteAndIdProducto(idClient, idProduct);
+	}
 }

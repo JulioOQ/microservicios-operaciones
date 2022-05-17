@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 
-
 @Repository
 public interface TransactionRepository extends ReactiveMongoRepository<Transaction, String> {
 

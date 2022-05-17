@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jvoq.microservicios.operaciones.app.clients.ProductClientFeign;
-import com.jvoq.microservicios.operaciones.app.clients.UserClientFeign;
-import com.jvoq.microservicios.operaciones.app.models.documents.Client;
 import com.jvoq.microservicios.operaciones.app.models.documents.Product;
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 import com.jvoq.microservicios.operaciones.app.models.repository.TransactionRepository;
@@ -21,9 +19,6 @@ public class TransactionServiceImplement implements TransactionService {
 
 	@Autowired
 	ProductClientFeign productClientFeign;
-
-	@Autowired
-	UserClientFeign userClientFeign;
 
 	@Override
 	public Flux<Transaction> findAll() {
@@ -48,10 +43,5 @@ public class TransactionServiceImplement implements TransactionService {
 	@Override
 	public Mono<Product> findProductById(String id) {
 		return productClientFeign.findProductById(id);
-	}
-
-	@Override
-	public Mono<Client> findClientById(String id) {
-		return userClientFeign.findClientById(id);
 	}
 }
