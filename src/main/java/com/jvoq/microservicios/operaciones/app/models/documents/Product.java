@@ -18,4 +18,9 @@ public class Product {
 	private String descripcion;
 	private int juridico;
 	private int natural;
+	private int max_deposito;
+	private int max_retiro;
+	private Double com_deposito;
+	private Double com_retiro;
+	private Double com_mantenimiento;
 }

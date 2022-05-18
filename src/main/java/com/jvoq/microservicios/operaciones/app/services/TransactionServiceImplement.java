@@ -44,4 +44,13 @@ public class TransactionServiceImplement implements TransactionService {
 	public Mono<Product> findProductById(String id) {
 		return productClientFeign.findProductById(id);
 	}
+
+	@Override
+	public Flux<Transaction> getTransactionsByCuentaAndTipoTransaccion(String idCuenta, String tipoTransaccion) {
+		if (tipoTransaccion.equalsIgnoreCase("Deposito")) {
+			return transactionRepository.findByDestinoAndTipoTransaccion(idCuenta, tipoTransaccion);
+		} else {
+			return transactionRepository.findByOrigenAndTipoTransaccion(idCuenta, tipoTransaccion);
+		}
+	}
 }

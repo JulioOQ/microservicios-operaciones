@@ -17,4 +17,6 @@ public interface TransactionService {
 	public Mono<Void> delete(Transaction transaction);
 
 	public Mono<Product> findProductById(String id);
+	
+	public Flux<Transaction> getTransactionsByCuentaAndTipoTransaccion(String idCuenta, String tipoTransaccion);
 }

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,6 +89,12 @@ public class AccountController {
 					int cuentasCreadasConProducto = accounts.size();
 					int cuentasACrearConProducto = (c.isJuridico()) ? p.getJuridico() : p.getNatural();
 					if (cuentasCreadasConProducto < cuentasACrearConProducto || cuentasACrearConProducto == -1) {
+						account.setMaxDeposito(p.getMax_deposito());
+						account.setMaxRetiro(p.getMax_retiro());
+						account.setComDeposito(p.getCom_deposito());
+						account.setComRetiro(p.getCom_retiro());
+						account.setComMantenimiento(p.getCom_mantenimiento());
+
 						return accountService.save(account);
 					} else {
 						return Mono.error(new RuntimeException(
@@ -104,11 +111,16 @@ public class AccountController {
 	@PutMapping("/{id}")
 	public Mono<ResponseEntity<Account>> update(@RequestBody Account account, @PathVariable String id) {
 		return accountService.findById(id).flatMap(a -> {
-			a.setIdProducto(account.getIdProducto());
-			a.setIdCliente(account.getIdCliente());
+			a.setIdProducto(a.getIdProducto());
+			a.setIdCliente(a.getIdCliente());
 			a.setNumeroCuenta(account.getNumeroCuenta());
 			a.setMoneda(account.getMoneda());
 			a.setSaldo(account.getSaldo());
+			a.setMaxDeposito(account.getMaxDeposito());
+			a.setMaxRetiro(account.getMaxRetiro());
+			a.setComDeposito(account.getComDeposito());
+			a.setComRetiro(account.getComRetiro());
+			a.setComMantenimiento(account.getComMantenimiento());
 
 			return accountService.save(a);
 		}).map(a -> ResponseEntity.created(URI.create("/accounts".concat(a.getIdCuenta())))
@@ -145,13 +157,20 @@ public class AccountController {
 	}
 
 	@PostMapping("/deposit")
-	public Mono<ResponseEntity<Transaction>> deposit(@RequestBody Transaction transaction) {
+	public Mono<ResponseEntity<Transaction>> deposit(@RequestBody Transaction transaction) throws InterruptedException {
+		// Obtener los depositos del *presente mes y año
+		List<Transaction> deposits = new ArrayList<>();
+		transactionService.getTransactionsByCuentaAndTipoTransaccion(transaction.getDestino(), "Deposito").collectList()
+				.subscribe(deposits::addAll);
+		TimeUnit.SECONDS.sleep(2L);
 		return accountService.findById(transaction.getDestino()).flatMap(a -> {
 			if (transaction.getMonto() > 0) {
-				a.setSaldo(a.getSaldo() + transaction.getMonto());
+				Double comision = (deposits.size() >= a.getMaxDeposito()) ? a.getComDeposito() : 0;
+				a.setSaldo(a.getSaldo() + transaction.getMonto() - comision);
 				accountService.save(a).subscribe();
 
 				transaction.setFecha(new Date());
+				transaction.setComision(comision);
 				return transactionService.save(transaction);
 			} else {
 				return Mono.error(new RuntimeException("El saldo de la cuenta origen es insuficiente"));
@@ -161,13 +180,20 @@ public class AccountController {
 	}
 
 	@PostMapping("/withdraw")
-	public Mono<ResponseEntity<Transaction>> withdraw(@RequestBody Transaction transaction) {
+	public Mono<ResponseEntity<Transaction>> withdraw(@RequestBody Transaction transaction) throws InterruptedException {
+		// Obtener los retiros del *presente mes y año
+		List<Transaction> withdraws = new ArrayList<>();
+		transactionService.getTransactionsByCuentaAndTipoTransaccion(transaction.getOrigen(), "Retiro").collectList()
+				.subscribe(withdraws::addAll);
+		TimeUnit.SECONDS.sleep(2L);
 		return accountService.findById(transaction.getOrigen()).flatMap(a -> {
-			if (a.getSaldo() >= transaction.getMonto() && transaction.getMonto() > 0) {
-				a.setSaldo(a.getSaldo() - transaction.getMonto());
+			Double comision = (withdraws.size() >= a.getMaxRetiro()) ? a.getComRetiro() : 0;
+			if (a.getSaldo() >= (transaction.getMonto() + comision) && transaction.getMonto() > 0) {
+				a.setSaldo(a.getSaldo() - transaction.getMonto() - comision);
 				accountService.save(a).subscribe();
 
 				transaction.setFecha(new Date());
+				transaction.setComision(comision);
 				return transactionService.save(transaction);
 			} else {
 				return Mono.error(new RuntimeException("El saldo de la cuenta origen es insuficiente"));
