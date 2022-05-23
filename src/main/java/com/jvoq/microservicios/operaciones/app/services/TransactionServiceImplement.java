@@ -53,4 +53,10 @@ public class TransactionServiceImplement implements TransactionService {
 			return transactionRepository.findByOrigenAndTipoTransaccion(idCuenta, tipoTransaccion);
 		}
 	}
+
+  @Override
+  public Flux<Transaction> getMovementsByClienteAndProducto(String idCliente, String idProducto) {
+   
+    return transactionRepository.findByIdClienteAndIdProducto(idCliente, idProducto);
+  }
 }

@@ -146,6 +146,9 @@ public class AccountController {
           accountService.save(a2).subscribe();
 
           transaction.setFecha(new Date());
+         
+          transaction.setIdCliente(a2.getIdCliente());
+          transaction.setIdProducto(a2.getIdProducto());          
           return transactionService.save(transaction);
         });
       } else {
@@ -168,6 +171,9 @@ public class AccountController {
         a.setSaldo(a.getSaldo() + transaction.getMonto() - comision);
         accountService.save(a).subscribe();
 
+        transaction.setIdCliente(a.getIdCliente());
+        transaction.setIdProducto(a.getIdProducto());    
+        
         transaction.setFecha(new Date());
         transaction.setComision(comision);
         return transactionService.save(transaction);
@@ -193,6 +199,10 @@ public class AccountController {
 
         transaction.setFecha(new Date());
         transaction.setComision(comision);
+        
+        transaction.setIdCliente(a.getIdCliente());
+        transaction.setIdProducto(a.getIdProducto());    
+        
         return transactionService.save(transaction);
       } else {
         return Mono.error(new RuntimeException("El saldo de la cuenta origen es insuficiente"));
@@ -209,6 +219,10 @@ public class AccountController {
         accountService.save(a).subscribe();
 
         transaction.setFecha(new Date());
+        
+        transaction.setIdCliente(a.getIdCliente());
+        transaction.setIdProducto(a.getIdProducto()); 
+        
         return transactionService.save(transaction);
       } else {
         return Mono.error(new RuntimeException("El saldo es insuficiente"));

@@ -33,4 +33,8 @@ public class Transaction {
 	private Double monto;
 	private Double comision;
 	private Date fecha;
+	
+	private String idCliente;
+	private String idProducto;
+	
 }
