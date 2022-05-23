@@ -1,5 +1,7 @@
 package com.jvoq.microservicios.operaciones.app.models.documents;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -39,4 +41,7 @@ public class Credit {
 	private Double saldo;
 	private Double consumido;
 	private Double interes;
+	@Field("fecha_pago")
+	@JsonProperty("fecha_pago")
+	private Date fechaPago;
 }
