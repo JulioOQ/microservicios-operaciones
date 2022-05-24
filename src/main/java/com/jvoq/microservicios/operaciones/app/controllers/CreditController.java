@@ -34,6 +34,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/credits")
 public class CreditController {
+	
 	@Autowired
 	private CreditService creditService;
 
@@ -65,16 +66,15 @@ public class CreditController {
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 
+	@GetMapping("/client/{id}")
+	public Mono<ResponseEntity<Flux<Credit>>> getCreditByIdClient(@PathVariable String id) {
+		return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+				.body(creditService.findCreditByIdClient(id)));
+	}
+
 	@PostMapping
 	public Mono<ResponseEntity<Credit>> create(@RequestBody Credit credit) {
 
-		/*
-		 * return creditService.save(credit) .map(c ->
-		 * ResponseEntity.created(URI.create("/credits".concat(c.getIdCredito())))
-		 * .contentType(MediaType.APPLICATION_JSON).body(c));
-		 */
-
-		// Obtener los creditos del cliente con dicho producto
 		List<Credit> credits = new ArrayList<>();
 		creditService.findCreditsByIdClientAndIdProduct(credit.getIdCliente(), credit.getIdProducto()).collectList()
 				.subscribe(credits::addAll);
@@ -141,6 +141,10 @@ public class CreditController {
 		return creditService.findById(transaction.getDestino()).flatMap(a -> {
 			if (transaction.getMonto() > 0 && (transaction.getMonto() + a.getSaldo()) <= a.getLineaCredito()) {
 				a.setSaldo(a.getSaldo() + transaction.getMonto());
+
+				transaction.setIdCliente(a.getIdCliente());
+				transaction.setIdProducto(a.getIdProducto());
+
 				creditService.save(a).subscribe();
 
 				transaction.setFecha(new Date());
@@ -161,6 +165,10 @@ public class CreditController {
 				creditService.save(a).subscribe();
 
 				transaction.setFecha(new Date());
+
+				transaction.setIdCliente(a.getIdCliente());
+				transaction.setIdProducto(a.getIdProducto());
+
 				return transactionService.save(transaction);
 			} else {
 				return Mono.error(new RuntimeException("El saldo es insuficiente"));
@@ -168,5 +176,4 @@ public class CreditController {
 		}).map(t -> ResponseEntity.created(URI.create("/transactions".concat(t.getIdTransaccion())))
 				.contentType(MediaType.APPLICATION_JSON).body(t)).defaultIfEmpty(ResponseEntity.notFound().build());
 	}
-
 }

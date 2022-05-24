@@ -13,5 +13,7 @@ public interface TransactionRepository extends ReactiveMongoRepository<Transacti
 	Flux<Transaction> findByDestinoAndTipoTransaccion(String idCuenta, String tipoTransaccion);
 
 	Flux<Transaction> findByOrigenAndTipoTransaccion(String idCuenta, String tipoTransaccion);
+	
+	Flux<Transaction> findByIdClienteAndIdProducto(String idCliente, String idProducto);
 
 }

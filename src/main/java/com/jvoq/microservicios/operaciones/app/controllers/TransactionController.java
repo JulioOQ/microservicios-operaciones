@@ -83,4 +83,11 @@ public class TransactionController {
 			return transactionService.delete(t).then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
 		}).defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
 	}
+
+	@GetMapping("/client/{idCliente}/product/{idProducto}")
+	public Mono<ResponseEntity<Flux<Transaction>>> getMovementsByClientAndProduct(@PathVariable String idCliente,
+			@PathVariable String idProducto) {
+		return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+				.body(transactionService.getMovementsByClienteAndProducto(idCliente, idProducto)));
+	}
 }

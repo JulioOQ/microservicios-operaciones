@@ -36,7 +36,12 @@ public class CreditServiceImplement implements CreditService {
 	}
 
 	@Override
-	public Flux<Credit> findCreditsByIdClientAndIdProduct(String idClient, String idProduct) {
-		return creditRepository.findCreditsByIdClienteAndIdProducto(idClient, idProduct);
-	}
+  public Flux<Credit> findCreditsByIdClientAndIdProduct(String idClient, String idProduct) {
+    return creditRepository.findCreditsByIdClienteAndIdProducto(idClient, idProduct);
+  }
+
+  @Override
+  public Flux<Credit> findCreditByIdClient(String idClient) {
+    return creditRepository.findCreditByIdCliente(idClient);
+  }
 }

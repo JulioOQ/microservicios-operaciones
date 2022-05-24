@@ -16,4 +16,6 @@ public interface CreditService {
 	public Mono<Void> delete(Credit credit);
 
 	public Flux<Credit> findCreditsByIdClientAndIdProduct(String idClient, String idProduct);
+	
+	public Flux<Credit> findCreditByIdClient(String idClient);
 }
