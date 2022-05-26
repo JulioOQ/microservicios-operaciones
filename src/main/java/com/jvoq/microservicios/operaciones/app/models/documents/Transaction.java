@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -32,8 +33,8 @@ public class Transaction {
 	private String moneda;
 	private Double monto;
 	private Double comision;
-	private Date fecha;
-	
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Lima")
+	private Date fecha;	
 	private String idCliente;
 	private String idProducto;
 	

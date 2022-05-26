@@ -1,6 +1,7 @@
 package com.jvoq.microservicios.operaciones.app.controllers;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,6 +87,11 @@ public class CreditController {
 				int creditosCreadosConProducto = credits.size();
 				int creditosACrearConProducto = (c.isJuridico()) ? p.getJuridico() : p.getNatural();
 				if (creditosCreadosConProducto < creditosACrearConProducto || creditosACrearConProducto == -1) {
+				  credit.setConsumido(0.0);
+				  credit.setSaldo(credit.getLineaCredito());
+				  credit.setPagoMensual((credit.getInteres()/100 * credit.getLineaCredito())+ credit.getLineaCredito());
+				  LocalDate start = LocalDate.parse(""+credit.getFechaPago());
+				  credit.setFechaPago(start);
 					return creditService.save(credit);
 				} else {
 					return Mono.error(new RuntimeException(
@@ -162,6 +168,8 @@ public class CreditController {
 		return creditService.findById(transaction.getOrigen()).flatMap(a -> {
 			if (transaction.getMonto() > 0 && transaction.getMonto() <= a.getSaldo()) {
 				a.setSaldo(a.getSaldo() - transaction.getMonto());
+				a.setConsumido(a.getLineaCredito()-a.getSaldo());
+				a.setPagoMensual((a.getInteres()/100 * a.getLineaCredito())+ a.getLineaCredito());
 				creditService.save(a).subscribe();
 
 				transaction.setFecha(new Date());

@@ -2,6 +2,8 @@ package com.jvoq.microservicios.operaciones.app.dtos;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.AllArgsConstructor;
@@ -13,11 +15,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({ "id_tarjeta", "num_tarjeta", "tipo", "fech_expiracion", "fecha_creacion" })
+@JsonPropertyOrder({ "idTarjeta", "numTarjeta", "tipo", "fechaExpiracion", "fechCreacion" })
 public class CardDto {
-	private String id_tarjeta;
-	private String num_tarjeta;
-	private String tipo;
-	private String fech_expiracion;
-	private Date fechCreacion;
+  
+  @JsonProperty("id_tarjeta")
+	private String idTarjeta;
+	@JsonProperty("numero_tarjeta")
+	private String numTarjeta;
+	private String tipo;	
+  @JsonProperty("fecha_expiracion")
+	private String fechaExpiracion;	
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Lima")
+  @JsonProperty("fecha_creacion")
+	private Date fechaCreacion;
 }

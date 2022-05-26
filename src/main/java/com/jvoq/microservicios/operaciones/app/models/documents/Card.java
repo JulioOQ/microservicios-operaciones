@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -25,14 +26,14 @@ public class Card {
 	@JsonProperty("id_tarjeta")
 	@Id
 	private String idTarjeta;
-	@Field("num_tarjeta")
-	@JsonProperty("num_tarjeta")
+	@Field("numero_tarjeta")
+	@JsonProperty("numero_tarjeta")
 	private String numTarjeta;
 	private String tipo;
-	@Field("fech_expiracion")
-	@JsonProperty("fech_expiracion")
-	private String fechExpiracion;
-	@Field("fech_creacion")
-	@JsonProperty("fech_creacion")
-	private Date fechCreacion;
+	@Field("fecha_expiracion")
+	@JsonProperty("fecha_expiracion")
+	private String fechaExpiracion;
+	@Field("fecha_creacion")
+	@JsonProperty("fecha_creacion")
+	private Date fechaCreacion;
 }

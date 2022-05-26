@@ -72,14 +72,14 @@ public class CardController {
 
 	@PostMapping
 	public Mono<ResponseEntity<CardDto>> create(@RequestBody CardDto cardDto) {
-		return cardService.save(cardDto).map(c -> ResponseEntity.created(URI.create("/cards".concat(c.getId_tarjeta())))
+		return cardService.save(cardDto).map(c -> ResponseEntity.created(URI.create("/cards".concat(c.getIdTarjeta())))
 				.contentType(MediaType.APPLICATION_JSON).body(c));
 	}
 
 	@PutMapping("/{id}")
 	public Mono<ResponseEntity<CardDto>> update(@RequestBody CardDto cardDto, @PathVariable String id) {
 		return cardService.update(cardDto, id)
-				.map(c -> ResponseEntity.created(URI.create("/cards".concat(c.getId_tarjeta())))
+				.map(c -> ResponseEntity.created(URI.create("/cards".concat(c.getIdTarjeta())))
 						.contentType(MediaType.APPLICATION_JSON).body(c))
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}

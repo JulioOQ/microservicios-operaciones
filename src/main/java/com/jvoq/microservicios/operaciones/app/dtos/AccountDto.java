@@ -1,6 +1,8 @@
 package com.jvoq.microservicios.operaciones.app.dtos;
 
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -32,6 +34,7 @@ public class AccountDto {
   private Double saldo;
   
   @JsonProperty("fecha_creacion")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Lima")
   private Date fechaCreacion;
   
   @JsonProperty("max_deposito")

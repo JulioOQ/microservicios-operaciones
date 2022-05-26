@@ -1,11 +1,16 @@
 package com.jvoq.microservicios.operaciones.app.models.documents;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonPropertyOrder({ "idCredito", "numeroCredito","saldo", "moneda","lineaCredito","consumido","interes","pagoMensual","idProducto", "idCliente","fechaPago" })
 public class Credit {
 
 	@Id
@@ -41,7 +47,11 @@ public class Credit {
 	private Double saldo;
 	private Double consumido;
 	private Double interes;
+	@Field("pago_mensual")
+  @JsonProperty("pago_mensual")
+	private Double pagoMensual;
+	
 	@Field("fecha_pago")
 	@JsonProperty("fecha_pago")
-	private Date fechaPago;
+	private LocalDate fechaPago;
 }

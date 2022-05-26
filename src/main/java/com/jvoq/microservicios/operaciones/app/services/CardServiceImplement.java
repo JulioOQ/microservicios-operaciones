@@ -35,7 +35,7 @@ public class CardServiceImplement implements CardService {
 
 	@Override
 	public Mono<CardDto> save(CardDto cardDto) {
-		cardDto.setFechCreacion(new Date());
+		cardDto.setFechaCreacion(new Date());
 		Card card = this.convertDtoToEntity(cardDto);
 		return cardRepository.save(card).map(this::convertEntityToDto);
 	}
@@ -43,10 +43,10 @@ public class CardServiceImplement implements CardService {
 	@Override
 	public Mono<CardDto> update(CardDto cardDto, String id) {
 		return this.findById(id).flatMap(c -> {
-			c.setNum_tarjeta(cardDto.getNum_tarjeta());
+			c.setNumTarjeta(cardDto.getNumTarjeta());
 			c.setTipo(cardDto.getTipo());
-			c.setFech_expiracion(cardDto.getFech_expiracion());
-			c.setFechCreacion(cardDto.getFechCreacion());
+			c.setFechaExpiracion(cardDto.getFechaExpiracion());
+			c.setFechaCreacion(cardDto.getFechaCreacion());
 			return this.save(c);
 		});
 	}
