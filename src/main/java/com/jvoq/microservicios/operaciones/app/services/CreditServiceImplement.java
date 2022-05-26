@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 public class CreditServiceImplement implements CreditService {
 
 	@Autowired
-	CreditRepository creditRepository;
+	private CreditRepository creditRepository;
 
 	@Override
 	public Flux<Credit> findAll() {
@@ -36,12 +36,12 @@ public class CreditServiceImplement implements CreditService {
 	}
 
 	@Override
-  public Flux<Credit> findCreditsByIdClientAndIdProduct(String idClient, String idProduct) {
-    return creditRepository.findCreditsByIdClienteAndIdProducto(idClient, idProduct);
-  }
+	public Flux<Credit> findCreditsByIdClientAndIdProduct(String idClient, String idProduct) {
+		return creditRepository.findCreditsByIdClienteAndIdProducto(idClient, idProduct);
+	}
 
-  @Override
-  public Flux<Credit> findCreditByIdClient(String idClient) {
-    return creditRepository.findCreditByIdCliente(idClient);
-  }
+	@Override
+	public Flux<Credit> findCreditByIdClient(String idClient) {
+		return creditRepository.findCreditsByIdCliente(idClient);
+	}
 }

@@ -1,6 +1,7 @@
 package com.jvoq.microservicios.operaciones.app.controllers;
 
 import java.net.URI;
+import java.util.Date;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jvoq.microservicios.operaciones.app.dtos.CardDetailDto;
 import com.jvoq.microservicios.operaciones.app.dtos.CardDto;
 import com.jvoq.microservicios.operaciones.app.models.documents.Card;
+import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
+import com.jvoq.microservicios.operaciones.app.services.AccountService;
 import com.jvoq.microservicios.operaciones.app.services.CardDetailService;
 import com.jvoq.microservicios.operaciones.app.services.CardService;
+import com.jvoq.microservicios.operaciones.app.services.TransactionService;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,6 +41,12 @@ public class CardController {
 
 	@Autowired
 	private CardDetailService cardDetailService;
+
+	@Autowired
+	AccountService accountService;
+
+	@Autowired
+	private TransactionService transactionService;
 
 	@Autowired
 	private ModelMapper mapper;
@@ -89,5 +99,25 @@ public class CardController {
 					.map(c -> ResponseEntity.created(URI.create("/card_details".concat(c.getIdCardetail())))
 							.contentType(MediaType.APPLICATION_JSON).body(c));
 		}).defaultIfEmpty(ResponseEntity.notFound().build());
+	}
+
+	@PostMapping("/buy")
+	public Mono<ResponseEntity<Transaction>> buy(@RequestBody Transaction transaction) {
+		return accountService.findById(transaction.getOrigen()).flatMap(a -> {
+			if (transaction.getMonto() > 0 && transaction.getMonto() <= a.getSaldo()) {
+				a.setSaldo(a.getSaldo() - transaction.getMonto());
+				accountService.save(a).subscribe();
+
+				transaction.setFecha(new Date());
+
+				transaction.setIdCliente(a.getIdCliente());
+				transaction.setIdProducto(a.getIdProducto());
+
+				return transactionService.save(transaction);
+			} else {
+				return Mono.error(new RuntimeException("El saldo es insuficiente"));
+			}
+		}).map(t -> ResponseEntity.created(URI.create("/transactions".concat(t.getIdTransaccion())))
+				.contentType(MediaType.APPLICATION_JSON).body(t)).defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 }

@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.jvoq.microservicios.operaciones.app.clients.ProductClientFeign;
+import com.jvoq.microservicios.operaciones.app.models.documents.Product;
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
 import com.jvoq.microservicios.operaciones.app.services.TransactionService;
 
@@ -29,6 +32,9 @@ public class TransactionController {
 
 	@Autowired
 	private TransactionService transactionService;
+
+	@Autowired
+	ProductClientFeign productClientFeign;
 
 	@Value("${mensaje.verificacion:default}")
 	private String mensaje;
@@ -89,5 +95,21 @@ public class TransactionController {
 			@PathVariable String idProducto) {
 		return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
 				.body(transactionService.getMovementsByClienteAndProducto(idCliente, idProducto)));
+	}
+
+	// Permitir elaborar un resumen consolidado de un cliente con todos los
+	// productos que pueda tener en el banco.
+	@GetMapping("/products/client/{idCliente}")
+	public Mono<ResponseEntity<Flux<Object>>> getProductsByClient(@PathVariable String idCliente) {
+		return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+				.body(transactionService.findProductsByIdClient(idCliente)));
+	}
+
+	// Para probar si trae productos via gateway
+	@GetMapping("/products/{idProducto}")
+	public Mono<ResponseEntity<Product>> getProducts(@PathVariable String idProducto) {
+		return transactionService.findProductById(idProducto)
+				.map(t -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(t))
+				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 }

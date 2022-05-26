@@ -10,7 +10,7 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface AccountRepository extends ReactiveMongoRepository<Account, String> {
 
-	Flux<Account> findAccountByIdCliente(String idClient);
+	Flux<Account> findAccountsByIdCliente(String idClient);
 
-	Flux<Account> findAccountByIdClienteAndIdProducto(String idClient, String idProduct);
+	Flux<Account> findAccountsByIdClienteAndIdProducto(String idClient, String idProduct);
 }

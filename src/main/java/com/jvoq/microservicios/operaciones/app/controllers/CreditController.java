@@ -67,7 +67,7 @@ public class CreditController {
 	}
 
 	@GetMapping("/client/{id}")
-	public Mono<ResponseEntity<Flux<Credit>>> getCreditByIdClient(@PathVariable String id) {
+	public Mono<ResponseEntity<Flux<Credit>>> getCreditsByIdClient(@PathVariable String id) {
 		return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
 				.body(creditService.findCreditByIdClient(id)));
 	}

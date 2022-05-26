@@ -61,12 +61,12 @@ public class AccountServiceImplement implements AccountService {
 
   @Override
   public Flux<Account> findAccoutsByIdClient(String idClient) {
-    return accountRepository.findAccountByIdCliente(idClient);
+    return accountRepository.findAccountsByIdCliente(idClient);
   }
 
   @Override
   public Flux<Account> findAccountsByIdClientAndIdProduct(String idClient, String idProduct) {
-    return accountRepository.findAccountByIdClienteAndIdProducto(idClient, idProduct);
+    return accountRepository.findAccountsByIdClienteAndIdProducto(idClient, idProduct);
   }
 
   private AccountDto convertEntityToDto(Account account) {

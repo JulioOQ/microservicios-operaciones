@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,7 +72,7 @@ public class AccountController {
 	}
 
 	@GetMapping("/client/{id}")
-	public Mono<ResponseEntity<Flux<Account>>> getAccountByIdClient(@PathVariable String id) {
+	public Mono<ResponseEntity<Flux<Account>>> getAccountsByIdClient(@PathVariable String id) {
 		return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
 				.body(accountService.findAccoutsByIdClient(id)));
 	}
@@ -88,7 +89,6 @@ public class AccountController {
 		return clientService.findById(accountDto.getIdCliente()).flatMap(c -> {
 
 			if (accountDto.getSaldo() >= 0) {
-
 				return productService.findById(accountDto.getIdProducto()).flatMap(p -> {
 					int cuentasCreadasConProducto = accounts.size();
 					int cuentasACrearConProducto = (c.isJuridico()) ? p.getJuridico() : p.getNatural();
@@ -105,16 +105,12 @@ public class AccountController {
 						String mensaje = "Ya registra cuentas con dicho producto o simplemente no califica para adquirir el producto";
 						return Mono.error(new Exception(mensaje));
 					}
-
 				});
-
 			} else {
 				return Mono.error(new RuntimeException("La apertura mininima debe ser 0."));
 			}
-
 		}).map(a -> ResponseEntity.created(URI.create("/accounts".concat(a.getIdCuenta())))
 				.contentType(MediaType.APPLICATION_JSON).body(a)).defaultIfEmpty(ResponseEntity.notFound().build());
-
 	}
 
 	@PutMapping("/{id}")

@@ -1,11 +1,17 @@
 package com.jvoq.microservicios.operaciones.app.services;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jvoq.microservicios.operaciones.app.clients.ProductClientFeign;
 import com.jvoq.microservicios.operaciones.app.models.documents.Product;
 import com.jvoq.microservicios.operaciones.app.models.documents.Transaction;
+import com.jvoq.microservicios.operaciones.app.models.repository.AccountRepository;
+import com.jvoq.microservicios.operaciones.app.models.repository.CreditRepository;
 import com.jvoq.microservicios.operaciones.app.models.repository.TransactionRepository;
 
 import reactor.core.publisher.Flux;
@@ -19,6 +25,12 @@ public class TransactionServiceImplement implements TransactionService {
 
 	@Autowired
 	ProductClientFeign productClientFeign;
+
+	@Autowired
+	private AccountRepository accountRepository;
+
+	@Autowired
+	private CreditRepository creditRepository;
 
 	@Override
 	public Flux<Transaction> findAll() {
@@ -54,9 +66,22 @@ public class TransactionServiceImplement implements TransactionService {
 		}
 	}
 
-  @Override
-  public Flux<Transaction> getMovementsByClienteAndProducto(String idCliente, String idProducto) {
-   
-    return transactionRepository.findByIdClienteAndIdProducto(idCliente, idProducto);
-  }
+	@Override
+	public Flux<Transaction> getMovementsByClienteAndProducto(String idCliente, String idProducto) {
+
+		return transactionRepository.findByIdClienteAndIdProducto(idCliente, idProducto);
+	}
+
+	@Override
+	public Flux<Object> findProductsByIdClient(String idCliente) {
+		List<Object> products = new ArrayList<>();
+		try {
+			accountRepository.findAccountsByIdCliente(idCliente).collectList().subscribe(products::addAll);
+			creditRepository.findCreditsByIdCliente(idCliente).collectList().subscribe(products::addAll);
+			TimeUnit.SECONDS.sleep(2L);
+		} catch (Exception e) {
+			System.err.println("ERROR:" + e.getMessage());
+		}
+		return Mono.just(products).flatMapMany(Flux::fromIterable).log();
+	}
 }
