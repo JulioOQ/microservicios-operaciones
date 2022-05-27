@@ -19,7 +19,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({ "idTransaccion", "tipoTransaccion", "origen", "destino", "monto", "moneda", "comision","descripcion","fecha"})
+@JsonPropertyOrder({ "idTransaccion", "tipoTransaccion", "origen", "destino", "monto", "moneda", "comision",
+		"descripcion", "fecha" })
 public class Transaction {
 
 	@JsonProperty("id_transaccion")
@@ -33,9 +34,8 @@ public class Transaction {
 	private String moneda;
 	private Double monto;
 	private Double comision;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Lima")
-	private Date fecha;	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Lima")
+	private Date fecha;
 	private String idCliente;
 	private String idProducto;
-	
 }

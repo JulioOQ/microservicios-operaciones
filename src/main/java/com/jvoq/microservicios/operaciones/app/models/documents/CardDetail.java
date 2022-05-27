@@ -19,7 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonPropertyOrder({ "idCardetail", "idTarjeta", "idCuenta", "principal" })
 public class CardDetail {
-	
+
 	@JsonProperty("id_cardetail")
 	@Id
 	private String idCardetail;

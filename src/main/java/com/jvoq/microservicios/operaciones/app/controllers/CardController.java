@@ -120,4 +120,9 @@ public class CardController {
 		}).map(t -> ResponseEntity.created(URI.create("/transactions".concat(t.getIdTransaccion())))
 				.contentType(MediaType.APPLICATION_JSON).body(t)).defaultIfEmpty(ResponseEntity.notFound().build());
 	}
+	
+	@GetMapping("/details")
+	public Mono<ResponseEntity<Flux<CardDetailDto>>> getCardDetails() {
+		return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(cardDetailService.findAll()));
+	}
 }

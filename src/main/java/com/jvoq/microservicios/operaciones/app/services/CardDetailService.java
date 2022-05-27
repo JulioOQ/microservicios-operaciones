@@ -16,4 +16,6 @@ public interface CardDetailService {
 	public Mono<CardDetailDto> update(CardDetailDto cardDetailDto, String id);
 
 	public Mono<Void> delete(CardDetail cardDetail);
+
+	public Mono<CardDetailDto> findAccountByIdTarjeta(String idTarjeta);
 }

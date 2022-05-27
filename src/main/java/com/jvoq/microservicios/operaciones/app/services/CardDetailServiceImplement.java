@@ -52,6 +52,11 @@ public class CardDetailServiceImplement implements CardDetailService {
 		return cardDetailRepository.delete(cardDetail);
 	}
 
+	@Override
+	public Mono<CardDetailDto> findAccountByIdTarjeta(String idTarjeta) {
+		return cardDetailRepository.findByIdTarjetaAndPrincipal(idTarjeta, true).map(this::convertEntityToDto);
+	}
+
 	private CardDetailDto convertEntityToDto(CardDetail cardDetail) {
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
 		return mapper.map(cardDetail, CardDetailDto.class);
