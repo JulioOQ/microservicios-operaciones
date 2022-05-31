@@ -43,11 +43,11 @@ public class WalletServiceImplement implements WalletService {
 	@Override
 	public Mono<WalletDto> update(WalletDto walletDto, String id) {
 		return this.findById(id).flatMap(c -> {
-			c.setCellphoneNumber(walletDto.getCellphoneNumber());
-			c.setEmail(walletDto.getEmail());
+			c.setNumCelular(walletDto.getNumCelular());
+			c.setCorreo(walletDto.getCorreo());
 			c.setImei(walletDto.getImei());
-			c.setIdCard(walletDto.getIdCard());
-			c.setBalance(c.getBalance()+ walletDto.getBalance());
+			c.setIdTarjeta(walletDto.getIdTarjeta());
+			c.setSaldo(c.getSaldo()+ walletDto.getSaldo());
 			return this.save(c);
 		});
 	}
@@ -59,7 +59,7 @@ public class WalletServiceImplement implements WalletService {
 
 	@Override
 	public Mono<WalletDto> findByCellphoneNumber(String cellphoneNumber) {
-		return walletRepository.findByCellphoneNumber(cellphoneNumber).map(this::convertEntityToDto);
+		return walletRepository.findByNumCelular(cellphoneNumber).map(this::convertEntityToDto);
 	}
 
 	private WalletDto convertEntityToDto(Wallet wallet) {

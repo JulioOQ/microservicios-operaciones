@@ -35,7 +35,7 @@ public class WalletTransactionServiceImplement implements WalletTransactionServi
 
 	@Override
 	public Mono<WalletTransactionDto> save(WalletTransactionDto walletTransactionDto) {
-		walletTransactionDto.setTransactionDate(new Date());
+		walletTransactionDto.setFecha(new Date());
 		WalletTransaction wallet = this.convertDtoToEntity(walletTransactionDto);
 		return wTransactionRepository.save(wallet).map(this::convertEntityToDto);
 	}
@@ -43,8 +43,8 @@ public class WalletTransactionServiceImplement implements WalletTransactionServi
 	@Override
 	public Mono<WalletTransactionDto> update(WalletTransactionDto walletTransactionDto, String id) {
 		return this.findById(id).flatMap(c -> {
-			c.setSubject(walletTransactionDto.getSubject());
-			c.setDescription(walletTransactionDto.getDescription());
+			c.setAsunto(walletTransactionDto.getAsunto());
+			c.setDescripcion(walletTransactionDto.getDescripcion());
 			return this.save(c);
 		});
 	}

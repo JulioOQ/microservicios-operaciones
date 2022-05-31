@@ -9,10 +9,12 @@ import com.jvoq.microservicios.operaciones.app.services.CardDetailService;
 import com.jvoq.microservicios.operaciones.app.services.WalletService;
 import com.jvoq.microservicios.operaciones.app.services.WalletTransactionService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,25 +26,17 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/wallets")
 public class WalletController {
+  
+  @Autowired
+	private  WalletService walletService;
+  @Autowired
+	private  WalletTransactionService transactionService;
+  @Autowired
+  private ModelMapper mapper;
 
-	private final WalletService walletService;
 
-	private final WalletTransactionService transactionService;
 
-	private final CardDetailService cardDetailService;
 
-	private final AccountService accountService;
-
-	private final ModelMapper mapper;
-
-	public WalletController(WalletService walletService, WalletTransactionService transactionService,
-			CardDetailService cardDetailService, AccountService accountService, ModelMapper mapper) {
-		this.walletService = walletService;
-		this.transactionService = transactionService;
-		this.cardDetailService = cardDetailService;
-		this.accountService = accountService;
-		this.mapper = mapper;
-	}
 
 	@GetMapping
 	public Mono<ResponseEntity<Flux<WalletDto>>> getAll() {
@@ -58,14 +52,14 @@ public class WalletController {
 	@PostMapping
 	public Mono<ResponseEntity<WalletDto>> create(@RequestBody WalletDto walletDto) {
 		return walletService.save(walletDto)
-				.map(w -> ResponseEntity.created(URI.create("/wallets".concat(w.getIdWallet())))
+				.map(w -> ResponseEntity.created(URI.create("/wallets".concat(w.getIdMonedero())))
 						.contentType(MediaType.APPLICATION_JSON).body(w));
 	}
 
 	@PutMapping("/{id}")
 	public Mono<ResponseEntity<WalletDto>> update(@RequestBody WalletDto walletDto, @PathVariable String id) {
 		return walletService.update(walletDto, id)
-				.map(w -> ResponseEntity.created(URI.create("/wallets".concat(w.getIdWallet())))
+				.map(w -> ResponseEntity.created(URI.create("/wallets".concat(w.getIdMonedero())))
 						.contentType(MediaType.APPLICATION_JSON).body(w))
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
@@ -78,63 +72,54 @@ public class WalletController {
 		}).defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
-	@PostMapping("/send")
+	@PostMapping("/send-money")
 	public Mono<ResponseEntity<WalletTransactionDto>> sendMoney(@RequestBody WalletTransactionDto transaction) {
-		return walletService.findByCellphoneNumber(transaction.getSource()).flatMap(w1 -> {
-			if (transaction.getAmount() > 0 && w1.getBalance() >= transaction.getAmount()) {
-				return walletService.findByCellphoneNumber(transaction.getDestination()).flatMap(w2 -> {
-					// verificar si esta asociado a una tarjeta
-					if (w1.getIdCard() == null) {
-						// descontar de monedero
-						w1.setBalance(w1.getBalance() - transaction.getAmount());
-						walletService.save(w1).subscribe();
-					} else {
-						// descontar de cuenta asociada a tarjeta
-						cardDetailService.findAccountByIdTarjeta(w1.getIdCard())
-								.flatMap(t -> accountService.findById(t.getIdCuenta())).mapNotNull(a -> {
-									a.setSaldo(a.getSaldo() - transaction.getAmount());
-									return accountService.save(a).subscribe();
-								});
-						try {
-							TimeUnit.SECONDS.sleep(2L);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-
-					// verificar si esta asociado a una tarjeta
-					if (w2.getIdCard() == null) {
-						// Aumentar el saldo al monedero
-						w2.setBalance(w2.getBalance() + transaction.getAmount());
-						walletService.save(w2).subscribe();
-					} else {
-						// Aumentar el saldo a la cuenta asociada a tarjeta
-						cardDetailService.findAccountByIdTarjeta(w2.getIdCard())
-								.flatMap(t -> accountService.findById(t.getIdCuenta())).mapNotNull(a -> {
-									a.setSaldo(a.getSaldo() + transaction.getAmount());
-									return accountService.save(a).subscribe();
-								});
-						try {
-							TimeUnit.SECONDS.sleep(2L);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					transaction.setIdWallet(w1.getIdWallet());
+	  
+	  return walletService.findByCellphoneNumber(transaction.getCelularOrigen()).flatMap(w1 -> {
+			if (transaction.getMonto() > 0 && w1.getSaldo() >= transaction.getMonto()) {
+			  System.out.println("entro if 1");
+				return walletService.findByCellphoneNumber(transaction.getCelularDestino()).flatMap(w2 -> {
+				  
+				
+          w1.setSaldo(w1.getSaldo() - transaction.getMonto());
+          walletService.save(w1).subscribe(); 
+          
+          w2.setSaldo(w2.getSaldo() + transaction.getMonto());
+          walletService.save(w2).subscribe();
+          
+         
+					transaction.setIdMonedero(w1.getIdMonedero());
 					return transactionService.save(transaction);
 				});
 			} else {
 				return Mono.error(new RuntimeException("El saldo del monedero es insuficiente"));
 			}
-		}).map(t -> ResponseEntity.created(URI.create("/wallets/transactions/send".concat(t.getIdTransaction())))
+		}).map(t -> ResponseEntity.created(URI.create("/send".concat(t.getIdTransacionMonedero())))
 				.contentType(MediaType.APPLICATION_JSON).body(t)).defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 
 	@PostMapping("/receive")
-	public Mono<ResponseEntity<Transaction>> receiveMoney(@RequestBody Transaction transaction) {
-		return null;
+	public Mono<ResponseEntity<WalletTransactionDto>> receiveMoney(@RequestBody WalletTransactionDto transaction) {
+	  
+	  return walletService.findByCellphoneNumber(transaction.getCelularOrigen()).flatMap(w1 -> {
+      if (transaction.getMonto() > 0 && w1.getSaldo() >= transaction.getMonto()) {
+        System.out.println("entro if 1");
+        return walletService.findByCellphoneNumber(transaction.getCelularDestino()).flatMap(w2 -> {
+                          
+          System.out.println("entro if 3");
+          w2.setSaldo(w2.getSaldo() + transaction.getMonto());
+          walletService.save(w2).subscribe();
+          
+
+
+          transaction.setIdMonedero(w1.getIdMonedero());
+          return transactionService.save(transaction);
+        });
+      } else {
+        return Mono.error(new RuntimeException("El saldo del monedero es insuficiente"));
+      }
+    }).map(t -> ResponseEntity.created(URI.create("/send".concat(t.getIdTransacionMonedero())))
+        .contentType(MediaType.APPLICATION_JSON).body(t)).defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 
 }

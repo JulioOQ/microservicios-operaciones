@@ -22,17 +22,17 @@ import lombok.Setter;
 public class Wallet {
 
 	@Id
-	@JsonProperty("id_wallet")
-	private String idWallet;
-	@Field("id_card")
-	@JsonProperty("id_card")
-	private String idCard;
-	@Field("cellphone_number")
-	@JsonProperty("cellphone_number")
-	private String cellphoneNumber;
+	@JsonProperty("id_monedero")
+	private String idMonedero;
+	@Field("id_tarjeta")
+	@JsonProperty("id_tarjeta")
+	private String idTarjeta;
+	@Field("numero_celular")
+	@JsonProperty("numero_celular")
+	private String numCelular;
 	private String imei;
-	private String email;
-	private Double balance;
+	private String correo;
+	private Double saldo;
 	@Field("fecha_creacion")
 	@JsonProperty("fecha_creacion")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Lima")

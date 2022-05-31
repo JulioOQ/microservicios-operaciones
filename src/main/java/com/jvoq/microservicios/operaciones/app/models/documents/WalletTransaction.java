@@ -22,20 +22,26 @@ import lombok.Setter;
 public class WalletTransaction {
 
 	@Id
-	@JsonProperty("id_transaction")
-	private String idTransaction;
-	@JsonProperty("id_wallet")
-	@Field("id_wallet")
-	private String idWallet;
-	private String source;
-	private String destination;
-	private String subject;
-	private String description;
-	private String currency;
-	private Double amount;
-	private Double commission;
+	@JsonProperty("id_transaction_monedero")
+	private String idTransacionMonedero;
+	
+	@JsonProperty("id_monedero")
+	@Field("id_monedero")
+	private String idMonedero;
+	
+	@JsonProperty("celular_origen")
+  @Field("celular_origen")
+	private String celularOrigen;
+	@JsonProperty("celular_destino")
+  @Field("celular_destino")
+	private String celularDestino;
+	private String asunto;
+	private String descripcion;
+	private String moneda;
+	private Double monto;
+	private Double comision;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Lima")
-	@JsonProperty("transaction_date")
-	@Field("transaction_date")
-	private Date transactionDate;
+	@JsonProperty("fecha")
+	@Field("fecha")
+	private Date fecha;
 }

@@ -10,5 +10,5 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface WalletRepository extends ReactiveMongoRepository<Wallet, String> {
 
-	public Mono<Wallet> findByCellphoneNumber(String cellphoneNumber);
+	public Mono<Wallet> findByNumCelular(String numeroCelular);
 }
